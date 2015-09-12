@@ -11,6 +11,9 @@ android {
         versionCode 5
         versionName "1.4"
     }
+    sourceSets.main {
+        jniLibs.srcDirs = ['libs']
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -22,4 +25,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.2'
+    compile files('libs/jpush-sdk-release1.8.1.jar')
 }

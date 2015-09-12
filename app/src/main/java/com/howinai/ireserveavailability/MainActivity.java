@@ -46,9 +46,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import cn.jpush.android.api.JPushInterface;
+
 
 public class MainActivity extends ActionBarActivity {
 
+    boolean isDebug = false;
     TextView tv, bg;
     EditText interval;
     Button update, visit;
@@ -143,6 +146,10 @@ public class MainActivity extends ActionBarActivity {
         tv = (TextView) this.findViewById(R.id.tv_main);
         init();
         startService(new Intent(MainActivity.this, MyService.class));
+
+        // init jPush
+        JPushInterface.setDebugMode(isDebug);
+        JPushInterface.init(this);
     }
 
     @Override
