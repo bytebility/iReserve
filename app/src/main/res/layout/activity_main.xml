@@ -87,9 +87,6 @@
             android:text="iReserve 網站"
             android:textSize="14sp"
             android:id="@+id/visit" />
-
-
-
     </LinearLayout>
 
     <TextView
@@ -98,6 +95,7 @@
         android:text="*長按型號可加標示"
         android:textStyle="italic|bold"
         android:textColor="#555555"
+        android:layout_marginBottom="20dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
@@ -117,32 +115,39 @@
         android:id="@+id/columnHeader"
         >
 
-        <TextView
-            android:text=""
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"/>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:text="銅鑼灣"
-            android:gravity="center"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            <TextView
+                android:text="銅鑼灣"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
 
-        <TextView
-            android:text="又一城"
-            android:gravity="center"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            <TextView
+                android:text="又一城"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
 
-        <TextView
-            android:text="IFC"
-            android:gravity="center"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            <TextView
+                android:text="IFC"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:text="廣東道"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
     </LinearLayout>
 
     <ListView
@@ -153,49 +158,6 @@
         android:layout_alignLeft="@+id/columnHeader"
         android:layout_alignStart="@+id/columnHeader"
         >
-
-
     </ListView>
-
-
-    <!--
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/columnHeader"
-        >
-
-        <ListView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/list_model"
-            android:layout_weight="2"/>
-
-        <ListView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/list_shop1"
-
-            android:layout_weight="1"/>
-
-        <ListView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/list_shop2"
-            android:layout_weight="1"/>
-
-        <ListView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/list_shop3"
-            android:layout_weight="1"/>
-    </LinearLayout>
-    !-->
-
 
 </RelativeLayout>

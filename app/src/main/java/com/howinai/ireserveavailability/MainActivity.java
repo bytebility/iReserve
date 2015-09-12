@@ -1,5 +1,6 @@
 package com.howinai.ireserveavailability;
 
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,80 +10,126 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Array;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity {
 
     TextView tv, bg;
-    //ListView modelList;
     EditText interval;
     Button update, visit;
     ListView list;
-    //int shopList[] = {R.id.list_shop1, R.id.list_shop2, R.id.list_shop3};
     HashMap<String, String> map;
+    private static final Map<String, String> modelToSlugStaticMap;
     static String IntervalString = "com.howinai.ireserveavailability.interval";
-    int tvIDs[] = {R.id.name_tv, R.id.cwb_tv, R.id.fes_tv, R.id.ifc_tv};
-    String shops[] = {"R409", "R485", "R428"};
-    String models[] = {"MGAF2ZP/A",
-            "MG492ZP/A",
-            "MGAC2ZP/A",
-            "MGA92ZP/A",
-            "MG4F2ZP/A",
-            "MG472ZP/A",
-            "MG4A2ZP/A",
-            "MGAK2ZP/A",
-            "MGAA2ZP/A",
-            "MG4J2ZP/A",
-            "MGAJ2ZP/A",
-            "MG4H2ZP/A",
-            "MGAE2ZP/A",
-            "MG4E2ZP/A",
-            "MG482ZP/A",
-            "MGAH2ZP/A",
-            "MG4C2ZP/A",
-            "MGA82ZP/A"};
+    int tvIDs[] = {R.id.name_tv, R.id.cwb_tv, R.id.fes_tv, R.id.ifc_tv, R.id.canton_tv};
+    String shops[] = {"R409", "R485", "R428", "R499"};
+    String models[] = {"MKQM2ZP/A",
+            "MKQL2ZP/A",
+            "MKQK2ZP/A",
+            "MKQJ2ZP/A",
+            "MKQR2ZP/A",
+            "MKQQ2ZP/A",
+            "MKQP2ZP/A",
+            "MKQN2ZP/A",
+            "MKQW2ZP/A",
+            "MKQV2ZP/A",
+            "MKU52ZP/A",
+            "MKU32ZP/A",
+            "MKU22ZP/A",
+            "MKU12ZP/A",
+            "MKU92ZP/A",
+            "MKU82ZP/A",
+            "MKU72ZP/A",
+            "MKU62ZP/A",
+            "MKUG2ZP/A",
+            "MKUF2ZP/A",
+            "MKUE2ZP/A",
+            "MKUD2ZP/A"};
 
-    String phones[] = {"iP6-Plus Gold 128GB",
-            "iP6 Gold 16GB",
-            "iP6-Plus Black 128GB",
-            "iP6-Plus Silver 16GB",
-            "iP6 Black 64GB",
-            "iP6 Black 16GB",
-            "iP6 Black 128GB",
-            "iP6-Plus Gold 64GB",
-            "iP6-Plus Gold 16GB",
-            "iP6 Gold 64GB",
-            "iP6-Plus Silver 64GB",
-            "iP6 Silver 16GB",
-            "iP6-Plus Silver 128GB",
-            "iP6 Gold 128GB",
-            "iP6 Silver 64GB",
-            "iP6-Plus Black 64GB",
-            "iP6 Silver 128GB",
-            "iP6-Plus Black 16GB"
-    };
+    String phones[] = {"iPhone 6s 16GB 玫瑰金色",
+            "iPhone 6s 16GB 金色",
+            "iPhone 6s 16GB 銀色",
+            "iPhone 6s 16GB 太空灰",
+            "iPhone 6s 64GB 玫瑰金色",
+            "iPhone 6s 64GB 金色",
+            "iPhone 6s 64GB 銀色",
+            "iPhone 6s 64GB 太空灰",
+            "iPhone 6s 128GB 玫瑰金色",
+            "iPhone 6s 128GB 金色",
+            "iPhone 6s Plus 16GB 玫瑰金色",
+            "iPhone 6s Plus 16GB 金色",
+            "iPhone 6s Plus 16GB 銀色",
+            "iPhone 6s Plus 16GB 太空灰",
+            "iPhone 6s Plus 64GB 玫瑰金色",
+            "iPhone 6s Plus 64GB 金色",
+            "iPhone 6s Plus 64GB 銀色",
+            "iPhone 6s Plus 64GB 大空灰",
+            "iPhone 6s Plus 128GB 玫瑰金色",
+            "iPhone 6s Plus 128GB 金色",
+            "iPhone 6s Plus 128GB 銀色",
+            "iPhone 6s Plus 128GB 大空灰"};
+
+    static {
+        Map<String, String> modelToSlugMap = new HashMap<>();
+        modelToSlugMap.put("MKQM2ZP/A", "iPhone 6s 16GB 玫瑰金色");
+        modelToSlugMap.put("MKQL2ZP/A", "iPhone 6s 16GB 金色");
+        modelToSlugMap.put("MKQK2ZP/A", "iPhone 6s 16GB 銀色");
+        modelToSlugMap.put("MKQJ2ZP/A", "iPhone 6s 16GB 太空灰");
+        modelToSlugMap.put("MKQR2ZP/A", "iPhone 6s 64GB 玫瑰金色");
+        modelToSlugMap.put("MKQQ2ZP/A", "iPhone 6s 64GB 金色");
+        modelToSlugMap.put("MKQP2ZP/A", "iPhone 6s 64GB 銀色");
+        modelToSlugMap.put("MKQN2ZP/A", "iPhone 6s 64GB 太空灰");
+        modelToSlugMap.put("MKQW2ZP/A", "iPhone 6s 128GB 玫瑰金色");
+        modelToSlugMap.put("MKQV2ZP/A", "iPhone 6s 128GB 金色");
+        modelToSlugMap.put("MKU52ZP/A", "iPhone 6s Plus 16GB 玫瑰金色");
+        modelToSlugMap.put("MKU32ZP/A", "iPhone 6s Plus 16GB 金色");
+        modelToSlugMap.put("MKU22ZP/A", "iPhone 6s Plus 16GB 銀色");
+        modelToSlugMap.put("MKU12ZP/A", "iPhone 6s Plus 16GB 太空灰");
+        modelToSlugMap.put("MKU92ZP/A", "iPhone 6s Plus 64GB 玫瑰金色");
+        modelToSlugMap.put("MKU82ZP/A", "iPhone 6s Plus 64GB 金色");
+        modelToSlugMap.put("MKU72ZP/A", "iPhone 6s Plus 64GB 銀色");
+        modelToSlugMap.put("MKU62ZP/A", "iPhone 6s Plus 64GB 大空灰");
+        modelToSlugMap.put("MKUG2ZP/A", "iPhone 6s Plus 128GB 玫瑰金色");
+        modelToSlugMap.put("MKUF2ZP/A", "iPhone 6s Plus 128GB 金色");
+        modelToSlugMap.put("MKUE2ZP/A", "iPhone 6s Plus 128GB 銀色");
+        modelToSlugMap.put("MKUD2ZP/A", "iPhone 6s Plus 128GB 大空灰");
+        modelToSlugStaticMap = Collections.unmodifiableMap(modelToSlugMap);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +156,6 @@ public class MainActivity extends ActionBarActivity {
     public void onConfigurationChanged(Configuration config){
         super.onConfigurationChanged(config);
 
-        //Log.d("Configuration", "changed!!!");
     }
 
     @Override
@@ -119,15 +165,11 @@ public class MainActivity extends ActionBarActivity {
 
     public void init(){
         map = new HashMap<String, String>();
-        for(int i = 0; i < models.length; i++){
+        for(int i = 0; i < models.length; i++) {
             map.put(phones[i], models[i]);
         }
 
         Arrays.sort(phones);
-        
-
-        //MyArrayAdapter adapter = new MyArrayAdapter(this, phones);
-        //modelList.setAdapter(adapter);
 
         update.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,15 +221,16 @@ public class MainActivity extends ActionBarActivity {
         }, new IntentFilter(MyService.ACTION_BGTIME));
     }
 
-    public void resetList(){
+    public void resetList() {
         (new GetAvailability()).execute();
     }
 
-    public void setJson(JSONObject json){
+    public void setJson(JSONObject json) {
         try {
             long time = json.getLong("updated");
             tv.setText(convertTime(time));
             String avails[][] = new String[models.length][shops.length + 1];
+            String availsWithStaticMap[][] = new String[models.length][shops.length + 1];
             for(int j = 0; j < shops.length; j++){
                 JSONObject root = json.getJSONObject(shops[j]);
 
@@ -265,7 +308,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if(convertView != null){
-            //    return convertView;
+                //    return convertView;
             }
             View view = myInflater.inflate(R.layout.list_item, parent, false);
 
@@ -279,7 +322,6 @@ public class MainActivity extends ActionBarActivity {
                 }
 
             }
-            //Log.d(tvs[0].getText().toString(), values[position][0]);
             if(MainActivity.this.getSharedPreferences("favourite", 0).getBoolean(values[position][0], false)){
                 view.setBackgroundColor(Color.CYAN);
             }
@@ -291,8 +333,6 @@ public class MainActivity extends ActionBarActivity {
     public class GetAvailability extends AsyncTask<String, String , String>{
         JSONParser jsonParser;
         JSONObject json;
-        String URL_iphone = "https://reserve.cdn-apple.com/HK/zh_HK/reserve/iPhone/availability.json";
-        //String URL_iphone = "http://i.cs.hku.hk/~kfchow/iphone/avail.json";
 
         @Override
         protected void onPreExecute() {
@@ -303,8 +343,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            json = jsonParser.makeHttpRequest(URL_iphone, "GET", null);
-            //Log.d("json", json.toString());
+            json = jsonParser.makeHttpRequest(MyContract.URL_iphone, "GET", null);
 
             return null;
         }

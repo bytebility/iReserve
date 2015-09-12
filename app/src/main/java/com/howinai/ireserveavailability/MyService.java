@@ -61,7 +61,7 @@ public class MyService extends Service {
                 Calendar calendar = GregorianCalendar.getInstance();
                 calendar.setTime(new Date());
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                if(hour >= 8 && hour <= 20){
+                if(hour >= 5 && hour <= 20){
                     (new GetAvailability()).execute();
                 }else{
                     Log.d("Sleeping", "zZzzZZzzzZZZZzzzzZZZZ");
@@ -85,8 +85,6 @@ public class MyService extends Service {
     }
 
     private void showNoti(String title, String content){
-        //Notification notification = new Notification(R.drawable.ireserve, content, System.currentTimeMillis());
-        //notification.setLatestEventInfo(this, title, content, PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
         NotificationCompat.Builder mbuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -104,9 +102,6 @@ public class MyService extends Service {
     public class GetAvailability extends AsyncTask<String, String , String> {
         JSONParser jsonParser;
         JSONObject json;
-        String URL_iphone = "https://reserve.cdn-apple.com/HK/zh_HK/reserve/iPhone/availability.json";
-        //String URL_iphone = "http://i.cs.hku.hk/~kfchow/iphone/iphone.php";
-        //String URL_iphone = "http://i.cs.hku.hk/~kfchow/iphone/avail.json";
 
         @Override
         protected void onPreExecute() {
@@ -117,8 +112,7 @@ public class MyService extends Service {
 
         @Override
         protected String doInBackground(String... params) {
-            json = jsonParser.makeHttpRequest(URL_iphone, "GET", null);
-            //Log.d("json", json.toString());
+            json = jsonParser.makeHttpRequest(MyContract.URL_iphone, "GET", null);
 
             return null;
         }
@@ -134,11 +128,9 @@ public class MyService extends Service {
             super.onPostExecute(s);
 
             try {
-                //boolean isAvail = json.getBoolean("availability");
                 long time = json.getLong("updated");
-                //String timestamp = convertTime(time);
                 String timestamp = convertTime(System.currentTimeMillis());
-                if(json.toString().contains("true")){
+                if(json.toString().contains("All")){
                     showNoti("有貨番!", timestamp);
                 }
                 Intent in = new Intent();
