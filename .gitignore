@@ -35,3 +35,6 @@ proguard/
 
 # Log Files
 *.log
+
+# custom gitignore
+ignored_*
